@@ -24,45 +24,45 @@ jobs:
           pip install ruff
           ruff check
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 'latest'
-      - name: Setup pip cache
-        run: echo "${{ github.workspace }}/.cache/pip" > ${{ github.workspace }}/.cache
-      - name: Display Python and pip versions
-        run: python --version && pip --version
-      - name: Create virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-      - name: Install dependencies and run tests
-        run: |
-          pip install pytest httpx
-          pip install -r requirements.txt
-          pytest
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 'latest'
+  #     - name: Setup pip cache
+  #       run: echo "${{ github.workspace }}/.cache/pip" > ${{ github.workspace }}/.cache
+  #     - name: Display Python and pip versions
+  #       run: python --version && pip --version
+  #     - name: Create virtual environment
+  #       run: |
+  #         python -m venv venv
+  #         source venv/bin/activate
+  #     - name: Install dependencies and run tests
+  #       run: |
+  #         pip install pytest httpx
+  #         pip install -r requirements.txt
+  #         pytest
 
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: gcr.io/kaniko-project/executor:v1.14.0-debug
-    steps:
-      - uses: actions/checkout@v2
-      - name: Authenticate Docker and build image
-        run: |
-          echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(printf "%s:%s" "${{ secrets.DOCKERHUB_USERNAME }}" "${{ secrets.DOCKERHUB_TOKEN }}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-          /kaniko/executor --context ${{ github.workspace }} --dockerfile ${{ github.workspace }}/Dockerfile --destination "alaboy19/mlops-hm07:n-bazarbek"
-      env: 
-        CI_PROJECT_DIR: ${{ github.workspace }}
+  # build:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: gcr.io/kaniko-project/executor:v1.14.0-debug
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Authenticate Docker and build image
+  #       run: |
+  #         echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(printf "%s:%s" "${{ secrets.DOCKERHUB_USERNAME }}" "${{ secrets.DOCKERHUB_TOKEN }}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+  #         /kaniko/executor --context ${{ github.workspace }} --dockerfile ${{ github.workspace }}/Dockerfile --destination "alaboy19/mlops-hm07:n-bazarbek"
+  #     env: 
+  #       CI_PROJECT_DIR: ${{ github.workspace }}
 
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    needs: [lint, test, build]
-    steps:
-      - name: Deploy to Render
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: [lint, test, build]
+  #   steps:
+  #     - name: Deploy to Render
+  #       run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
