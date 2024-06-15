@@ -31,7 +31,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 'latest'
+          python-version: '3.10'
       - name: Setup pip cache
         run: echo "${{ github.workspace }}/.cache/pip" > ${{ github.workspace }}/.cache
       - name: Display Python and pip versions
